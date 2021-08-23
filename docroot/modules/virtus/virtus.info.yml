@@ -1,0 +1,6 @@
+name: Virtus
+type: module
+description: Modulo virtus con configuraciones varias
+package: Custom
+core: 8.x
+core_version_requirement: ^8 || ^9
