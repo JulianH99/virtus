@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\webform\Entity\WebformSubmission;
+
 /**
  * @file
  * Primary module hooks for Virtus module.
@@ -8,3 +10,31 @@
  * This file is no longer required in Drupal 8.
  * @see https://www.drupal.org/node/2217931
  */
+
+
+
+function virtus_webform_submission_insert(WebformSubmission $webform)
+{
+
+  if ($webform->getWebform()->id() === 'subir_documento') {
+
+    $data = $webform->getData();
+
+
+    $uploaded_file = $data['archivo'];
+    $resource_url = $data['url_del_recurso'];
+    $programming_level = $data['nivel_de_programacion'];
+    $allow_download = $data['permitir_descarga'];
+    $allow_comments = $data['permitir_aportes'];
+    $categories = $data['categorias_asociadas'];
+
+    $mime_type = NULL;
+
+
+    if (!empty($resource_url)) {
+      $finfo = finfo_open(FILEINFO_MIME_TYPE);
+      $file_info = finfo_open($finfo, $resource_url);
+      finfo_close($finfo);
+    }
+  }
+}
