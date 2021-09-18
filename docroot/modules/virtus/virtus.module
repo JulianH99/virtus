@@ -1,5 +1,11 @@
 <?php
 
+use Drupal\Core\Link;
+use Drupal\Core\Render\Markup;
+use Drupal\file\Element\ManagedFile;
+use Drupal\file\Entity\File;
+use Drupal\node\Entity\Node;
+use Drupal\taxonomy\Entity\Term;
 use Drupal\webform\Entity\WebformSubmission;
 
 /**
@@ -11,6 +17,21 @@ use Drupal\webform\Entity\WebformSubmission;
  * @see https://www.drupal.org/node/2217931
  */
 
+
+
+function virtus_theme_suggestions_alter(array &$suggestions, array $variables, $hook)
+{
+  if ($hook === 'node') {
+    /**
+     * @var Node
+     */
+    $node = $variables['elements']['#node'];
+    if ($node->bundle() === 'recurso') {
+      $category = Term::load($node->get('field_categoria')->getValue()[0]['target_id']);
+      $suggestions[] = 'node__' . $node->bundle() . '__' . strtolower($category->getName()) . '__' . $variables['elements']['#view_mode'];
+    }
+  }
+}
 
 
 function virtus_webform_submission_insert(WebformSubmission $webform)
@@ -28,13 +49,57 @@ function virtus_webform_submission_insert(WebformSubmission $webform)
     $allow_comments = $data['permitir_aportes'];
     $categories = $data['categorias_asociadas'];
 
-    $mime_type = NULL;
+
+    $file = NULL;
+    if ($uploaded_file) {
+      $file = File::load($uploaded_file);
+    }
 
 
     if (!empty($resource_url)) {
-      $finfo = finfo_open(FILEINFO_MIME_TYPE);
-      $file_info = finfo_open($finfo, $resource_url);
-      finfo_close($finfo);
+      $info = pathinfo($resource_url);
+    } else {
+      $info = pathinfo($file->getFileUri());
     }
+
+
+    $node = Node::create([
+      'type' => 'recurso',
+      'title' => $info['filename'],
+      'field_categoria' => $categories[0],
+      'field_permitir_descarga' =>  $allow_download,
+      'field_permitir_comentarios' => $allow_comments,
+      'field_nivel' => $programming_level,
+      'status' => 'published'
+    ]);
+
+    $category = Term::load($categories[0]);
+    $categoryName = strtolower($category->getName());
+
+    if ($categoryName === 'documental' || $categoryName === 'presentación') {
+      $node->set('field_url', $resource_url);
+      $node->set('field_archivo', $uploaded_file);
+    }
+
+    if ($categoryName === 'entrevista') {
+      $node->set('field_url', $resource_url);
+    }
+
+    if ($categoryName === 'paper' || $categoryName === 'tutorial') {
+      if ($file) {
+        $node->set('field_archivo', $uploaded_file);
+      } else {
+        $node->set('field_url', $resource_url);
+      }
+    }
+
+    $node->save();
+
+    \Drupal::messenger()->addMessage('Se ha creado una nueva entrada de contenido: ' . Markup::create(
+      Link::fromTextAndUrl(
+        $node->getTitle(),
+        $node->toUrl('canonical')
+      )->toString()
+    ));
   }
 }
