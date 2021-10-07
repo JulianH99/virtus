@@ -60,14 +60,6 @@
  */
 #}
 
-<pre>
-
-{{
-  dump(_context | keys)
-}}
-
-</pre>
-
 
 {{ attach_library('bootstrap_barrio/node') }}
 
@@ -87,8 +79,14 @@
 		{{ title_prefix }}
 		{# {% if label and not page %} #}
 		<h2{{title_attributes.addClass('node__title')}}>
-			<a href="{{ url }}" rel="bookmark">{{ label }}</a>
+			{{ label }}
 		</h2>
+
+		<div class="node__categories">
+			{{content.field_categoria}}
+			{{content.field_nivel}}
+		</div>
+		<hr/>
 		{# {% endif %} #}
 		{{ title_suffix }}
 		{% if display_submitted %}
@@ -107,6 +105,26 @@
 		{% endif %}
 	</header>
 	<div{{content_attributes.addClass('node__content','clearfix')}}>
-		{{ content }}
+
+
+		{% if node.field_archivo.0.value %}
+			{{ content.field_archivo }}
+		{% endif %}
+
+		{% if node.field_url.0.value %}
+			{{ content.field_url }}
+		{% endif %}
+
+		{% if not node.field_url.0.value or not node.field_archivo.0.value %}
+			{{ content.body }}
+		{% endif %}
+
+
+		{% if node.field_permitir_comentarios.0.value %}
+			<div class="mt-5">
+				{{ content.field_comentarios }}
+			</div>
+
+		{% endif %}
 	</div>
 </article>

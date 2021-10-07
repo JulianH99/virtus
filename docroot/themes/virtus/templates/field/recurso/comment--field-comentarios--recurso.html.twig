@@ -1,0 +1,31 @@
+{% if threaded %}
+	{{ attach_library('vartheme_bs4/indented') }}
+{% endif %}
+
+{{ attach_library('vartheme_bs4/comments') }}
+
+{% set classes = ['comment', 'clearfix', 'card'] %}
+
+<article role="article" {{ attributes.addClass(classes)|without('role') }}>
+	<div class="card-body">
+		{% if title %}
+			<h3 class="card-title mb-0">
+				{{title}}
+			</h3>
+
+		{% endif %}
+		<span class="card-subtitle">
+			-{{ author }}</span>
+		<hr class="mb-0 mt-1"/>
+
+		<div class="card-content mt-2">
+			<div class="comment-body">
+				{{content.comment_body}}
+			</div>
+
+			<div class="comment-file">
+				{{content.field_archivo}}
+			</div>
+		</div>
+	</div>
+</article>

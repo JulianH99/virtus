@@ -1,5 +1,6 @@
 # Main theme library.
 global:
+  version: 1.x
   js:
     js/virtus.js: {}
   css:
@@ -18,6 +19,7 @@ global:
       css/components/table.css: {}
       css/components/tabs.css: {}
       css/components/buttons.css: {}
+      css/components/comments.css: {}
     layout:
       css/layouts/layout.css: {}
     theme:

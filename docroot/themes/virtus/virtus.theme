@@ -8,20 +8,30 @@
 /**
  * Implements hook_preprocess_HOOK() for html.html.twig.
  */
-function virtus_preprocess_html(&$variables) {
-
+function virtus_preprocess_html(&$variables)
+{
 }
 
 /**
  * Implements hook_preprocess_HOOK() for page.html.twig.
  */
-function virtus_preprocess_page(&$variables) {
-
+function virtus_preprocess_page(&$variables)
+{
 }
 
 /**
  * Implements hook_preprocess_HOOK() for node.html.twig.
  */
-function virtus_preprocess_node(&$variables) {
+function virtus_preprocess_node(&$variables)
+{
+}
 
+
+function virtus_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id)
+{
+  if ($form_id === 'comment_comment_form') {
+    $form['actions']['#attributes']['class'] = ['d-inline'];
+    $form['actions']['submit']['#attributes']['class'] = ['btn-sm', 'd-inline', 'w-50'];
+    $form['actions']['preview']['#attributes']['class'] = ['d-none'];
+  }
 }
